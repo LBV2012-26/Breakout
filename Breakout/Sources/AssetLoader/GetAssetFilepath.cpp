@@ -12,6 +12,8 @@ std::string GetAssetFilepath(AssetType Type, const std::string& Filename) {
 
     auto AssetFolderName = [Type]() -> std::string {
         switch (Type) {
+        case AssetType::kFont:
+            return "Fonts/";
         case AssetType::kLevel:
             return "Levels/";
         case AssetType::kShader:

@@ -472,11 +472,3 @@ GLvoid Game::ResetLevel() {
     _State = GameState::kMenu;
     _Lives = 3;
 }
-
-GLvoid Game::ResetPlayer() {
-    _Paddle->SetPosition(glm::vec2(_WindowWidth / 2.0f - _PaddleSize.x / 2.0f, _WindowHeight - _PaddleSize.y));
-    _Ball->Reset(_Paddle->GetPosition() + glm::vec2(_PaddleSize.x / 2.0f - _BallRadius, -_BallRadius * 2.0f), _BallVelocity);
-    for (auto& PowerUp : _PowerUps) {
-        PowerUp->SetActiveState(GL_FALSE);
-    }
-}

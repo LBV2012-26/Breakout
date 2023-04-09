@@ -47,6 +47,11 @@ public:
         _ProcessedKeys[Index] = bValue;
     }
 
+    GLvoid ResetPlayer() {
+        _Paddle->SetPosition(glm::vec2(_WindowWidth / 2.0f - _PaddleSize.x / 2.0f, _WindowHeight - _PaddleSize.y));
+        _Ball->Reset(_Paddle->GetPosition() + glm::vec2(_PaddleSize.x / 2.0f - _BallRadius, -_BallRadius * 2.0f), _BallVelocity);
+    }
+
 private:
     Collision CheckCollision(const BallObject* Ball, const GameObject* Brick);
     GLboolean CheckCollision(const PowerUp* PowerUp, const GameObject* Paddle);
@@ -58,7 +63,6 @@ private:
     GLboolean IsOtherPowerUpActivated(PowerUpType Type);
     GLvoid    UpdatePowerUps(GLfloat DeltaTime);
     GLvoid    ResetLevel();
-    GLvoid    ResetPlayer();
 
 private:
     std::array<GLboolean, 1024> _Keys;
