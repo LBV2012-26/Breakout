@@ -54,6 +54,9 @@
     <ClCompile Include="Sources\Game\Renderer\PostProcessor.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="Sources\Game\Renderer\TextRenderer.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Sources\stdafx.h">
@@ -98,6 +101,9 @@
     <ClInclude Include="Sources\Game\GameObject\PowerUp.hpp">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="Sources\Game\Renderer\TextRenderer.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Shaders\Vertex.glsl" />
@@ -108,6 +114,7 @@
     </None>
     <None Include="Assets\Shaders\PostProcessor.glsl" />
     <None Include="Assets\Shaders\ScreenBufferVertex.glsl" />
+    <None Include="Assets\Shaders\Text.glsl" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Breakout.rc">

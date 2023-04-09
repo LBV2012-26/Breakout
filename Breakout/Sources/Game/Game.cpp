@@ -19,6 +19,7 @@ Game::Game(GLint WindowWidth, GLint WindowHeight) :
     _Assets->LoadShader("Sprite", { "Vertex.glsl", "Sprite.glsl" });
     _Assets->LoadShader("Particle", { "Vertex.glsl", "Particle.glsl" }, { "__VERT_PARTICLE" });
     _Assets->LoadShader("PoseEffect", { "ScreenBufferVertex.glsl", "PostProcessor.glsl" });
+    _Assets->LoadShader("Text", { "Vertex.glsl", "Text.glsl" }, { "__VERT_TEXT" });
 
     glm::mat4x4 Projection = glm::ortho(0.0f, _WindowWidth, _WindowHeight, 0.0f, -1.0f, 0.0f);
     _Assets->GetShader("Sprite")->UseProgram();
@@ -46,6 +47,8 @@ Game::Game(GLint WindowWidth, GLint WindowHeight) :
     _Renderer   = new Sprite(_Assets->GetShader("Sprite"));
     _Particle   = new ParticleGenerator(_Assets->GetShader("Particle"), _Assets->GetTexture("Particle"), 500);
     _PostEffect = new PostProcessor(_Assets->GetShader("PoseEffect"), static_cast<GLsizei>(_WindowWidth), static_cast<GLsizei>(_WindowHeight), 4);
+    _Text       = new TextRenderer(_Assets->GetShader("Text"), "Monaco.ttf", static_cast<GLsizei>(_WindowWidth), static_cast<GLsizei>(_WindowHeight), 48);
+
 
     std::string LevelAssetDirectory = GetAssetFilepath(AssetType::kLevel, "");
     for (const auto& kEntry : std::filesystem::directory_iterator(LevelAssetDirectory)) {
@@ -211,6 +214,8 @@ GLvoid Game::Render() {
 
         _PostEffect->EndRender();
         _PostEffect->Render(static_cast<GLfloat>(glfwGetTime()));
+
+        _Text->Draw("Test", glm::vec2(5.0f, 5.0f), 1.0f);
     }
 }
 

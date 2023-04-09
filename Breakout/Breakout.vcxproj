@@ -160,6 +160,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="Sources\Game\Renderer\TextRenderer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Sources\Game\GameObject\PowerUp.hpp" />
@@ -176,12 +177,14 @@
     <ClInclude Include="Sources\AssetLoader\GetAssetFilepath.h" />
     <ClInclude Include="Sources\Game\Renderer\Sprite.h" />
     <ClInclude Include="Sources\stdafx.h" />
+    <ClInclude Include="Sources\Game\Renderer\TextRenderer.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Shaders\Particle.glsl" />
     <None Include="Assets\Shaders\PostProcessor.glsl" />
     <None Include="Assets\Shaders\ScreenBufferVertex.glsl" />
     <None Include="Assets\Shaders\Sprite.glsl" />
+    <None Include="Assets\Shaders\Text.glsl" />
     <None Include="Assets\Shaders\Vertex.glsl" />
     <None Include="Sources\Game\Renderer\Vertices.inc" />
   </ItemGroup>

@@ -4,6 +4,7 @@
 
 #include <string>
 
+#include <freetype/freetype.h>
 #include <glad/glad.h>
 #include <glm/glm.hpp>
 
@@ -33,6 +34,23 @@ public:
     TextureAttachment(GLsizei Width, GLsizei Height, GLenum InternalFormat, GLsizei Samples,
                       GLenum Attachment, GLboolean bFixedSampleLocations, GLuint Framebuffer);
     ~TextureAttachment();
+
+    GLvoid BindTextureUnit(const Shader* ActivatedShader, const std::string& UniformName) const;
+
+public:
+    GLuint GetTexture() const {
+        return _Texture;
+    }
+
+private:
+    GLuint _Texture{};
+};
+
+class TextureCharacter {
+public:
+    TextureCharacter() = default;
+    TextureCharacter(const FT_Face& Face);
+    ~TextureCharacter();
 
     GLvoid BindTextureUnit(const Shader* ActivatedShader, const std::string& UniformName) const;
 

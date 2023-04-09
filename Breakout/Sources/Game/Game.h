@@ -15,6 +15,7 @@
 #include "Renderer/ParticleGenerator.h"
 #include "Renderer/PostProcessor.h"
 #include "Renderer/Sprite.h"
+#include "Renderer/TextRenderer.h"
 #include "GameLevel.h"
 
 class Game {
@@ -87,6 +88,7 @@ private:
     BallObject*                 _Ball;
     ParticleGenerator*          _Particle;
     PostProcessor*              _PostEffect;
+    TextRenderer*               _Text;
 
     irrklang::ISoundEngine*     _SoundEngine;
 };
