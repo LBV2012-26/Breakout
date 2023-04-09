@@ -5,7 +5,7 @@
 #include <string>
 
 enum class AssetType {
-    kLevel, kShader, kSound, kTexture
+    kFont, kLevel, kShader, kSound, kTexture
 };
 
 std::string GetAssetFilepath(AssetType Type, const std::string& Filename);
