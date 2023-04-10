@@ -8,6 +8,11 @@
 
 #include "../../AssetLoader/GetAssetFilepath.h"
 #include "../../AssetLoader/Texture.h"
+#include "../../Constants.h"
+
+#ifdef NDEBUG
+#include <Windows.h>
+#endif // NDEBUG
 
 TextRenderer::TextRenderer(const Shader* TextShader, const std::string& FontFilename,
                            GLsizei Width, GLsizei Height, FT_UInt FontSize) :
@@ -40,7 +45,7 @@ TextRenderer::~TextRenderer() {
     // }
 }
 
-GLvoid TextRenderer::Draw(const std::string& Text, const glm::vec2& Position, GLfloat Scale, const glm::vec3& Color) {
+GLvoid TextRenderer::Draw(const std::string& Text, GLfloat x, GLfloat y, GLfloat Scale, const glm::vec3& Color) {
     _TextShader->UseProgram();
     _TextShader->SetUniform3fv("TextColor", Color);
     glBindVertexArray(_VertexArray);
@@ -48,26 +53,26 @@ GLvoid TextRenderer::Draw(const std::string& Text, const glm::vec2& Position, GL
     for (const auto CharCode : Text) {
         Character Char = _Characters[CharCode];
 
-        GLfloat PositionX = Position.x + Char.Bearings.x * Scale;
-        GLfloat PositionY = Position.y + (_Characters['H'].Bearings.y - Char.Bearings.y) * Scale;
+        GLfloat PositionX = x + Char.Bearings.x * Scale;
+        GLfloat PositionY = y + (_Characters['H'].Bearings.y - Char.Bearings.y) * Scale;
         GLfloat Width     = Char.Size.x * Scale;
         GLfloat Height    = Char.Size.y * Scale;
 
-        std::vector<std::vector<GLfloat>> Vertices{
-            { PositionX,         PositionY + Height, 0.0f, 1.0f },
-            { PositionX + Width, PositionY,          1.0f, 0.0f },
-            { PositionX,         PositionY,          0.0f, 0.0f },
+        std::vector<GLfloat> Vertices{
+            PositionX,         PositionY + Height, 0.0f, 1.0f,
+            PositionX + Width, PositionY,          1.0f, 0.0f,
+            PositionX,         PositionY,          0.0f, 0.0f,
 
-            { PositionX,         PositionY + Height, 0.0f, 1.0f },
-            { PositionX + Width, PositionY + Height, 1.0f, 1.0f },
-            { PositionX + Width, PositionY,          1.0f, 0.0f }
+            PositionX,         PositionY + Height, 0.0f, 1.0f,
+            PositionX + Width, PositionY + Height, 1.0f, 1.0f,
+            PositionX + Width, PositionY,          1.0f, 0.0f
         };
 
-        Char.TexData->BindTextureUnit(_TextShader, "TexTexture");
+        Char.TexData->BindTextureUnit(_TextShader, "TexTexture", kSpriteTexUnit);
 
         glNamedBufferSubData(_VertexBuffer, 0, Vertices.size() * sizeof(GLfloat), Vertices.data());
         glDrawArrays(GL_TRIANGLES, 0, 6);
-        PositionX += (Char.Advance >> 6) * Scale;
+        x += (Char.Advance >> 6) * Scale;
     }
 
     glBindVertexArray(0);
@@ -85,30 +90,42 @@ GLvoid TextRenderer::LoadFont(const std::string& FontFilepath, FT_UInt FontSize)
 
     FT_Face Face;
     if (FT_New_Face(Library, FontFilepath.c_str(), 0, &Face)) {
+#ifdef _DEBUG
         std::cerr << std::format("Fatal error: Can not open font file \"{}\": No such file or directory.", FontFilepath)
-                  << std::endl;
+            << std::endl;
         std::system("pause");
+#else
+        MessageBoxA(nullptr, std::format("Fatal error: Can not open font file \"{}\": No such file or directory.", FontFilepath).c_str(), "Font Load Error", MB_ICONERROR);
+#endif
         std::exit(EXIT_FAILURE);
     }
 
     FT_Set_Pixel_Sizes(Face, 0, FontSize);
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
+    GLboolean bAllGLyphLoadSuccess = GL_TRUE;
     for (GLubyte Char = 0; Char != 128; ++Char) {
         if (FT_Load_Char(Face, Char, FT_LOAD_RENDER)) {
             std::cerr << "Error: Failed to load glyph." << std::endl;
+            bAllGLyphLoadSuccess = GL_FALSE;
             continue;
         }
 
         Character CharData{
             new TextureCharacter(Face),
             glm::ivec2(Face->glyph->bitmap.width, Face->glyph->bitmap.rows),
-            glm::ivec2(Face->glyph->bitmap_left, Face->glyph->bitmap_top),
+            glm::ivec2(Face->glyph->bitmap_left,  Face->glyph->bitmap_top),
             Face->glyph->advance.x
         };
 
         _Characters.insert(std::make_pair(Char, CharData));
     }
+
+#ifdef NDEBUG
+    if (!bAllGLyphLoadSuccess) {
+        MessageBoxA(nullptr, "Warnig: Error generated. Not all glyph loaded.", "Font Load Warning", MB_ICONWARNING);
+    }
+#endif
 
     FT_Done_Face(Face);
     FT_Done_FreeType(Library);

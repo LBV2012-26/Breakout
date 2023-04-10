@@ -2,6 +2,8 @@
 #ifndef GAME_RENDERER_POSTPROCESSOR_H_
 #define GAME_RENDERER_POSTPROCESSOR_H_
 
+#include <cassert>
+
 #include <glad/glad.h>
 #include <glm/glm.hpp>
 
@@ -20,7 +22,7 @@ public:
     ~PostProcessor();
 
     GLvoid Render(GLfloat Time);
-    GLvoid SetEffect(Effects Effect, GLboolean bValue);
+    GLvoid SetEffectState(Effects Effect, GLboolean bValue);
 
 public:
     GLvoid BeginRender() {
@@ -34,6 +36,19 @@ public:
                                0, 0, _Width, _Height, 0, 0, _Width, _Height,
                                GL_COLOR_BUFFER_BIT, GL_NEAREST);
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    }
+
+    GLboolean GetEffectState(Effects Effect) const {
+        switch (Effect) {
+        case Effects::kChaos:
+            return _bChaos;
+        case Effects::kConfuse:
+            return _bConfuse;
+        case Effects::kShake:
+            return _bShake;
+        default:
+            assert(GL_FALSE);
+        }
     }
 
 private:

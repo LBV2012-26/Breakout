@@ -10,16 +10,17 @@
 #include "Renderer/Sprite.h"
 #include "../AssetLoader/AssetManager.h"
 #include "../AssetLoader/GetAssetFilepath.h"
+#include "../Constants.h"
 
 Game::Game(GLint WindowWidth, GLint WindowHeight) :
     _Keys(), _State(GameState::kMenu), _Lives(3), _ShakeTime(0.0f), _LevelIndex(0), _StickyChance(0),
     _WindowWidth(static_cast<GLfloat>(WindowWidth)), _WindowHeight(static_cast<GLfloat>(WindowHeight)),
     _PaddleVelocity(500.0f), _PaddleSize(150.0f, 30.0f), _BallVelocity(150.0f, -525.0f), _BallRadius(25.0f),
     _Assets(new AssetManager), _Renderer(nullptr), _Paddle(nullptr), _Ball(nullptr), _PostEffect(nullptr), _SoundEngine(nullptr) {
-    _Assets->LoadShader("Sprite", { "Vertex.glsl", "Sprite.glsl" });
-    _Assets->LoadShader("Particle", { "Vertex.glsl", "Particle.glsl" }, { "__VERT_PARTICLE" });
+    _Assets->LoadShader("Sprite",     { "Vertex.glsl", "Sprite.glsl" });
+    _Assets->LoadShader("Particle",   { "Vertex.glsl", "Particle.glsl" }, { "__VERT_PARTICLE" });
     _Assets->LoadShader("PoseEffect", { "ScreenBufferVertex.glsl", "PostProcessor.glsl" });
-    _Assets->LoadShader("Text", { "Vertex.glsl", "Text.glsl" }, { "__VERT_TEXT" });
+    _Assets->LoadShader("Text",       { "Vertex.glsl", "Text.glsl" }, { "__VERT_TEXT" });
 
     glm::mat4x4 Projection = glm::ortho(0.0f, _WindowWidth, _WindowHeight, 0.0f, -1.0f, 0.0f);
     _Assets->GetShader("Sprite")->UseProgram();
@@ -41,13 +42,13 @@ Game::Game(GLint WindowWidth, GLint WindowHeight) :
     _Assets->LoadTexture("Speed",           "PowerUps/Speed.png");
     _Assets->LoadTexture("Sticky",          "PowerUps/Sticky.png");
 
-    _Assets->GetTexture("Face")->BindTextureUnit(_Assets->GetShader("Sprite"), "SpriteTex");
-    _Assets->GetTexture("Particle")->BindTextureUnit(_Assets->GetShader("Particle"), "ParticleTex");
+    _Assets->GetTexture("Face")->BindTextureUnit(_Assets->GetShader("Sprite"), "SpriteTex", kSpriteTexUnit);
+    _Assets->GetTexture("Particle")->BindTextureUnit(_Assets->GetShader("Particle"), "ParticleTex", kParticleTexUnit);
 
     _Renderer   = new Sprite(_Assets->GetShader("Sprite"));
     _Particle   = new ParticleGenerator(_Assets->GetShader("Particle"), _Assets->GetTexture("Particle"), 500);
     _PostEffect = new PostProcessor(_Assets->GetShader("PoseEffect"), static_cast<GLsizei>(_WindowWidth), static_cast<GLsizei>(_WindowHeight), 4);
-    _Text       = new TextRenderer(_Assets->GetShader("Text"), "Monaco.ttf", static_cast<GLsizei>(_WindowWidth), static_cast<GLsizei>(_WindowHeight), 48);
+    _Text       = new TextRenderer(_Assets->GetShader("Text"), "Monaco.ttf", static_cast<GLsizei>(_WindowWidth), static_cast<GLsizei>(_WindowHeight), 24);
 
 
     std::string LevelAssetDirectory = GetAssetFilepath(AssetType::kLevel, "");
@@ -170,6 +171,14 @@ GLvoid Game::ProcessInput(GLfloat DeltaTime) {
             _ProcessedKeys[GLFW_KEY_ENTER] = GL_TRUE;
         }
     }
+
+    if (_State == GameState::kWon) {
+        if (_Keys[GLFW_KEY_ENTER] && !_ProcessedKeys[GLFW_KEY_ENTER]) {
+            _State = GameState::kMenu;
+            _ProcessedKeys[GLFW_KEY_ENTER] = GL_TRUE;
+            _PostEffect->SetEffectState(Effects::kChaos, GL_FALSE);
+        }
+    }
 }
 
 GLvoid Game::Update(GLfloat DeltaTime) {
@@ -181,41 +190,56 @@ GLvoid Game::Update(GLfloat DeltaTime) {
     if (_ShakeTime > 0.0f) {
         _ShakeTime -= DeltaTime;
         if (_ShakeTime <= 0.0f) {
-            _PostEffect->SetEffect(Effects::kShake, GL_FALSE);
+            _PostEffect->SetEffectState(Effects::kShake, GL_FALSE);
         }
     }
 
     if (_Ball->GetPosition().y >= _WindowHeight) {
+        --_Lives;
+        ResetPlayer();
         if (_Lives == 0) {
             ResetLevel();
         }
+    }
 
-        --_Lives;
+    if (_Levels[_LevelIndex]->IsCompleted() && _State == GameState::kActivated) {
+        ResetLevel();
         ResetPlayer();
+        _PostEffect->SetEffectState(Effects::kChaos, GL_TRUE);
+        _State = GameState::kWon;
     }
 }
 
 GLvoid Game::Render() {
-    if (_State == GameState::kActivated || _State == GameState::kMenu) {
-        _PostEffect->BeginRender();
+    _PostEffect->BeginRender();
 
-        _Renderer->Draw(AssetManager::GetTexture("Background"), glm::vec2(0.0f), glm::vec2(_WindowWidth, _WindowHeight));
-        _Levels[_LevelIndex]->Draw(_Renderer);
-        _Paddle->Draw(_Renderer);
+    _Renderer->Draw(AssetManager::GetTexture("Background"), glm::vec2(0.0f), glm::vec2(_WindowWidth, _WindowHeight));
+    _Levels[_LevelIndex]->Draw(_Renderer);
+    _Paddle->Draw(_Renderer);
 
-        for (const auto PowerUp : _PowerUps) {
-            if (!PowerUp->GetDestructionState()) {
-                PowerUp->Draw(_Renderer);
-            }
+    for (const auto PowerUp : _PowerUps) {
+        if (!PowerUp->GetDestructionState()) {
+            PowerUp->Draw(_Renderer);
         }
+    }
 
-        _Particle->Draw();
-        _Ball->Draw(_Renderer);
+    _Particle->Draw();
+    _Ball->Draw(_Renderer);
 
-        _PostEffect->EndRender();
-        _PostEffect->Render(static_cast<GLfloat>(glfwGetTime()));
+    _PostEffect->EndRender();
+    _PostEffect->Render(static_cast<GLfloat>(glfwGetTime()));
 
-        _Text->Draw("Test", glm::vec2(5.0f, 5.0f), 1.0f);
+    _Text->Draw("Lives: " + std::to_string(_Lives), 5.0f, 5.0f, 1.0f);
+
+    if (_State == GameState::kMenu) {
+        _Text->Draw("Press [Enter] to start.", 400.0f, _WindowHeight / 2.0f, 1.5f);
+        _Text->Draw("Press [W] or [S] to select level.", 410.0f, _WindowHeight / 2.0f + 50.0f, 1.0f);
+        _Text->Draw("When game started press [Space] to launch.", 350.0f, _WindowHeight / 2.0f + 90.0f, 1.0f);
+    }
+
+    if (_State == GameState::kWon) {
+        _Text->Draw("You Won! XD", 480.0f, _WindowHeight / 2.0f - 50.0f, 2.0f, glm::vec3(0.0f, 1.0f, 0.0f));
+        _Text->Draw("Press [Enter] to retry or [Esc] to quit.", 360, _WindowHeight / 2.0f, 1.0, glm::vec3(1.0, 1.0, 0.0));
     }
 }
 
@@ -278,7 +302,7 @@ GLvoid Game::Collide() {
                     _SoundEngine->play2D(GetAssetFilepath(AssetType::kSound, "Block.mp3").c_str());
                 } else {
                     _ShakeTime = 0.05f;
-                    _PostEffect->SetEffect(Effects::kShake, GL_TRUE);
+                    _PostEffect->SetEffectState(Effects::kShake, GL_TRUE);
                     _SoundEngine->play2D(GetAssetFilepath(AssetType::kSound, "Solid.wav").c_str());
                 }
 
@@ -353,29 +377,19 @@ GLvoid Game::SpawnPowerUps(const GameObject* Brick) {
     if (ShouldSpawnPowerUp(25)) {
         _PowerUps.emplace_back(new PowerUp(Brick->GetPosition(), _Assets->GetTexture("Chaos"),
                                            glm::vec3(0.9f, 0.25f, 0.25f), PowerUpType::kChaos, 15.0f));
-    }
-
-    if (ShouldSpawnPowerUp(25)) {
+    } else if (ShouldSpawnPowerUp(25)) {
         _PowerUps.emplace_back(new PowerUp(Brick->GetPosition(), _Assets->GetTexture("Confuse"),
                                            glm::vec3(0.5f, 1.0f, 0.5f), PowerUpType::kConfuse, 15.0f));
-    }
-
-    if (ShouldSpawnPowerUp(50)) {
+    } else if (ShouldSpawnPowerUp(50)) {
         _PowerUps.emplace_back(new PowerUp(Brick->GetPosition(), _Assets->GetTexture("PadSizeIncrease"),
                                            glm::vec3(1.0f, 0.6f, 0.4), PowerUpType::kPadSizeIncrease, 10.0f));
-    }
-
-    if (ShouldSpawnPowerUp(50)) {
+    } else if (ShouldSpawnPowerUp(50)) {
         _PowerUps.emplace_back(new PowerUp(Brick->GetPosition(), _Assets->GetTexture("PassThrough"),
                                            glm::vec3(1.0f, 0.3f, 0.3f), PowerUpType::kPassThrough, 10.0f));
-    }
-
-    if (ShouldSpawnPowerUp(50)) {
+    } else if (ShouldSpawnPowerUp(50)) {
         _PowerUps.emplace_back(new PowerUp(Brick->GetPosition(), _Assets->GetTexture("Speed"),
                                            glm::vec3(0.5f, 0.5f, 1.0f), PowerUpType::kSpeed, 5.0f));
-    }
-
-    if (ShouldSpawnPowerUp(50)) {
+    } else if (ShouldSpawnPowerUp(50)) {
         _PowerUps.emplace_back(new PowerUp(Brick->GetPosition(), _Assets->GetTexture("Sticky"),
                                            glm::vec3(1.0f, 0.5f, 1.0f), PowerUpType::kSticky, 0.0f));
     }
@@ -384,11 +398,17 @@ GLvoid Game::SpawnPowerUps(const GameObject* Brick) {
 GLvoid Game::ActivatePowerUp(const PowerUp* CollidedPowerUp) {
     switch (CollidedPowerUp->GetPowerUpType()) {
     case PowerUpType::kChaos: {
-        _PostEffect->SetEffect(Effects::kChaos, GL_TRUE);
+        if (!_PostEffect->GetEffectState(Effects::kConfuse)) {
+            _PostEffect->SetEffectState(Effects::kChaos, GL_TRUE);
+        }
+
         break;
     }
     case PowerUpType::kConfuse: {
-        _PostEffect->SetEffect(Effects::kConfuse, GL_TRUE);
+        if (!_PostEffect->GetEffectState(Effects::kChaos)) {
+            _PostEffect->SetEffectState(Effects::kConfuse, GL_TRUE);
+        }
+
         break;
     }
     case PowerUpType::kPadSizeIncrease: {
@@ -424,11 +444,11 @@ GLvoid Game::UpdatePowerUps(GLfloat DeltaTime) {
                 PowerUp->SetActiveState(GL_FALSE);
                 if (PowerUp->GetPowerUpType() == PowerUpType::kChaos) {
                     if (!IsOtherPowerUpActivated(PowerUpType::kChaos)) {
-                        _PostEffect->SetEffect(Effects::kChaos, GL_FALSE);
+                        _PostEffect->SetEffectState(Effects::kChaos, GL_FALSE);
                     }
                 } else if (PowerUp->GetPowerUpType() == PowerUpType::kConfuse) {
                     if (!IsOtherPowerUpActivated(PowerUpType::kConfuse)) {
-                        _PostEffect->SetEffect(Effects::kConfuse, GL_FALSE);
+                        _PostEffect->SetEffectState(Effects::kConfuse, GL_FALSE);
                     }
                 } else if (PowerUp->GetPowerUpType() == PowerUpType::kPadSizeIncrease) {
                     if (!IsOtherPowerUpActivated(PowerUpType::kPadSizeIncrease)) {
@@ -454,9 +474,9 @@ GLvoid Game::UpdatePowerUps(GLfloat DeltaTime) {
     }
 
     _PowerUps.erase(std::remove_if(_PowerUps.begin(), _PowerUps.end(),
-                    [](const auto* PowerUp) -> GLboolean {
-                        return PowerUp->GetDestructionState() & !PowerUp->GetActiveState();
-                    }), _PowerUps.end());;
+                                   [](const auto* PowerUp) -> GLboolean {
+                                       return PowerUp->GetDestructionState() & !PowerUp->GetActiveState();
+                                   }), _PowerUps.end());;
 }
 
 GLboolean Game::IsOtherPowerUpActivated(PowerUpType Type) {

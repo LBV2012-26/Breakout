@@ -10,7 +10,7 @@
 #include <glad/glad.h>
 #include <glm/glm.hpp>
 
-#include "../../AssetLoader/Shader.h"
+#include "AssetLoader/Shader.h"
 
 class TextRenderer {
 private:
@@ -26,7 +26,7 @@ public:
     TextRenderer(const Shader* TextShader, const std::string& FontFilename, GLsizei Width, GLsizei Height, FT_UInt FontSize);
     ~TextRenderer();
 
-    GLvoid Draw(const std::string& Text, const glm::vec2& Position, GLfloat Scale, const glm::vec3& Color = glm::vec3(1.0f));
+    GLvoid Draw(const std::string& Text, GLfloat x, GLfloat y, GLfloat Scale, const glm::vec3& Color = glm::vec3(1.0f));
 
 private:
     GLvoid LoadFont(const std::string& FontFilepath, FT_UInt FontSize);

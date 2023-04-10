@@ -19,7 +19,7 @@ public:
     ~GameLevel();
 
     GLvoid    Draw(const Sprite* Renderer);
-    GLboolean IsDestroyed();
+    GLboolean IsCompleted();
 
 public:
     std::vector<GameObject*>& GetBricks() {

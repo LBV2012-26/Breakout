@@ -8,6 +8,11 @@
 
 #include "Game/Game.h"
 
+#ifdef NDEBUG
+#include <tchar.h>
+#include <Windows.h>
+#endif // NDEBUG
+
 constexpr GLint  kWindowWidth   = 1280;
 constexpr GLint  kWindowHeight  = 960;
 constexpr GLchar kWindowTitle[] = "Breakout FPS:";
@@ -21,8 +26,12 @@ GLvoid Terminate(GLFWwindow* Window);
 
 int main() {
     if (!glfwInit()) {
+#ifdef _DEBUG
         std::cerr << "Error: Failed to initialize GLFW." << std::endl;
         std::system("pause");
+#else
+        MessageBox(nullptr, L"Failed to initialize GLFW.", _T("Error"), MB_ICONERROR);
+#endif // _DEBUG
         return EXIT_FAILURE;
     }
 
@@ -34,18 +43,26 @@ int main() {
 
     GLFWwindow* Window = glfwCreateWindow(kWindowWidth, kWindowHeight, kWindowTitle, nullptr, nullptr);
     if (!Window) {
+#ifdef _DEBUG
         std::cerr << "Error: Failed to create GLFW window." << std::endl;
         glfwTerminate();
         std::system("pause");
+#else
+        MessageBox(nullptr, L"Failed to create GLFW window.", _T("Error"), MB_ICONERROR);
+#endif // _DEBUG
         return EXIT_FAILURE;
     }
 
     glfwMakeContextCurrent(Window);
 
     if (!gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress))) {
+#ifdef _DEBUG
         std::cerr << "Error: Failed to initialize Glad." << std::endl;
         glfwTerminate();
         std::system("pause");
+#else
+        MessageBox(nullptr, L"Failed to initialize Glad.", _T("Error"), MB_ICONERROR);
+#endif // _DEBUG
         return EXIT_FAILURE;
     }
 
@@ -53,11 +70,13 @@ int main() {
 
     glfwSetFramebufferSizeCallback(Window, FramebufferSizeCallback);
     glfwSetKeyCallback(Window, KeyCallback);
-    glDebugMessageCallback(MessageCallback, nullptr);
 
     glViewport(0, 0, kWindowWidth, kWindowHeight);
     glEnable(GL_BLEND);
+#ifdef _DEBUG
     glEnable(GL_DEBUG_OUTPUT);
+    glDebugMessageCallback(MessageCallback, nullptr);
+#endif // _DEBUG
     glEnable(GL_MULTISAMPLE);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 

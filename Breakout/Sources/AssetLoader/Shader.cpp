@@ -10,6 +10,10 @@
 
 #include "GetAssetFilepath.h"
 
+#ifdef NDEBUG
+#include <Windows.h>
+#endif // NDEBUG
+
 Shader::Shader(const std::vector<std::string>& SourceFiles, const std::vector<std::string>& Macros) {
     std::vector<Source> ShaderSources;
     for (const auto& kSourceFile : SourceFiles) {
@@ -63,9 +67,13 @@ Shader::Source Shader::LoadShaderSource(const std::string& Filepath) {
     GLboolean bHasInclude = GL_FALSE;
 
     if (!SourceFile.is_open()) {
+#ifdef _DEBUG
         std::cerr << std::format("Fatal error: Can not open shader source file: \"{}\": No such file or directory.", Filepath)
                   << std::endl;
         std::system("pause");
+#else
+        MessageBoxA(nullptr, std::format("Fatal error: Can not open shader source file: \"{}\": No such file or directory.", Filepath).c_str(), "Shader Load Failed", MB_ICONERROR);
+#endif
         std::exit(EXIT_FAILURE);
     }
 
@@ -135,14 +143,18 @@ GLuint Shader::CompileShader(const Source& ShaderSource, GLenum ShaderType) cons
         glGetShaderiv(Shader, GL_INFO_LOG_LENGTH, &InfoLogLength);
         std::string InfoLog(InfoLogLength, '\0');
         glGetShaderInfoLog(Shader, InfoLogLength, nullptr, InfoLog.data());
+#ifdef _DEBUG
         std::cerr << std::format("Shader \"{}\" compile failed:\n{}", ShaderSource.Filepath, InfoLog.data()) << std::endl;
+        std::system("pause");
+#else
+        MessageBoxA(nullptr, std::format("Shader \"{}\" compile failed:\n{}", ShaderSource.Filepath, InfoLog.data()).c_str(), "Shader Load Error", MB_ICONERROR);
+#endif
         if (ShaderSource.bHasInclude || ShaderSource.bHasMacros) {
             std::ofstream ErrorShader(ShaderSource.Filepath + ".Error.glsl");
             ErrorShader << ShaderSource.Data << std::endl;
             ErrorShader.close();
         }
 
-        std::system("pause");
         std::exit(EXIT_FAILURE);
     }
 
@@ -166,9 +178,13 @@ GLvoid Shader::LinkProgram(const std::vector<GLuint>& Shaders) {
         glGetProgramiv(_Program, GL_INFO_LOG_LENGTH, &InfoLogLength);
         std::string InfoLog(InfoLogLength, '\0');
         glGetProgramInfoLog(_Program, InfoLogLength, nullptr, InfoLog.data());
+#ifdef _DEBUG
         std::cerr << std::format("Program link failed:\n{}", InfoLog.data()) << std::endl;
-
         std::system("pause");
+#else
+        MessageBoxA(nullptr, std::format("Program link failed:\n{}", InfoLog.data()).c_str(), "Shader Load Error", MB_ICONERROR);
+#endif
+
         std::exit(EXIT_FAILURE);
     }
 }

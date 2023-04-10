@@ -16,7 +16,7 @@ public:
     Texture2D(const std::string& ImageFilename, GLboolean bAutoFillFilepath = GL_TRUE);
     ~Texture2D();
 
-    GLvoid BindTextureUnit(const Shader* ActivatedShader, const std::string& UniformName) const;
+    GLvoid BindTextureUnit(const Shader* ActivatedShader, const std::string& UniformName, GLuint Unit) const;
 
 public:
     GLuint GetTexture() const {
@@ -35,7 +35,7 @@ public:
                       GLenum Attachment, GLboolean bFixedSampleLocations, GLuint Framebuffer);
     ~TextureAttachment();
 
-    GLvoid BindTextureUnit(const Shader* ActivatedShader, const std::string& UniformName) const;
+    GLvoid BindTextureUnit(const Shader* ActivatedShader, const std::string& UniformName, GLuint Unit) const;
 
 public:
     GLuint GetTexture() const {
@@ -52,7 +52,7 @@ public:
     TextureCharacter(const FT_Face& Face);
     ~TextureCharacter();
 
-    GLvoid BindTextureUnit(const Shader* ActivatedShader, const std::string& UniformName) const;
+    GLvoid BindTextureUnit(const Shader* ActivatedShader, const std::string& UniformName, GLuint Unit) const;
 
 public:
     GLuint GetTexture() const {

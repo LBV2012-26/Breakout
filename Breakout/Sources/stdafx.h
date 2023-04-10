@@ -17,6 +17,10 @@
 #include <utility>
 #include <vector>
 
+#ifdef NDEBUG
+#include <Windows.h>
+#endif // NDEBUG
+
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>

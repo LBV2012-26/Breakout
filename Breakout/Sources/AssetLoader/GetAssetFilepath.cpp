@@ -6,9 +6,9 @@
 
 std::string GetAssetFilepath(AssetType Type, const std::string& Filename) {
     std::string RootFolderName = "Assets/";
-#ifdef _RELEASE
+#ifdef NDEBUG
     RootFolderName = std::string("../") + RootFolderName;
-#endif // _RELEASE
+#endif // NDEBUG
 
     auto AssetFolderName = [Type]() -> std::string {
         switch (Type) {

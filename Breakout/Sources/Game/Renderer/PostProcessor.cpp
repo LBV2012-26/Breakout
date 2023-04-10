@@ -6,6 +6,12 @@
 
 #include "glm/glm.hpp"
 
+#include "../../Constants.h"
+
+#ifdef NDEBUG
+#include <Windows.h>
+#endif // NDEBUG
+
 PostProcessor::PostProcessor(const Shader* PostShader, GLsizei Width, GLsizei Height, GLsizei MultiSamples) :
     _PostShader(PostShader), _Width(Width), _Height(Height), _MultiSamples(MultiSamples) {
     glCreateFramebuffers(1, &_MultiSampledFramebuffer);
@@ -15,20 +21,28 @@ PostProcessor::PostProcessor(const Shader* PostShader, GLsizei Width, GLsizei He
     glNamedFramebufferRenderbuffer(_MultiSampledFramebuffer, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, _Renderbuffer);
 
     if (glCheckNamedFramebufferStatus(_MultiSampledFramebuffer, GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+#ifdef _DEBUG
         std::cerr << "Error: Failed to initialize multi-sample framebuffer." << std::endl;
         std::system("pause");
+#else
+        MessageBoxA(nullptr, "Failed to initialize multi-sample framebuffer.", "Framebuffer Incomplete", MB_ICONERROR);
+#endif
         std::exit(EXIT_FAILURE);
     }
 
     _TexColorBuffer = new TextureAttachment(_Width, _Height, GL_RGB8, GL_COLOR_ATTACHMENT0, _IntermediateFramebuffer);
 
     if (glCheckNamedFramebufferStatus(_IntermediateFramebuffer, GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+#ifdef _DEBUG
         std::cerr << "Error: Failed to initialize intermediate framebuffer." << std::endl;
         std::system("pause");
+#else
+        MessageBoxA(nullptr, "Failed to initialize intermediate framebuffer.", "Framebuffer Incomplete", MB_ICONERROR);
+#endif
         std::exit(EXIT_FAILURE);
     }
 
-    _TexColorBuffer->BindTextureUnit(_PostShader, "TexColorBuffer");
+    _TexColorBuffer->BindTextureUnit(_PostShader, "TexColorBuffer", kTexColorBufferTexUnit);
 
 #include "Vertices.inc"
 
@@ -74,13 +88,13 @@ GLvoid PostProcessor::Render(GLfloat Time) {
     _PostShader->SetUniform1i("bConfuse", _bConfuse);
     _PostShader->SetUniform1i("bShake", _bShake);
 
-    _TexColorBuffer->BindTextureUnit(_PostShader, "TexColorBuffer");
+    _TexColorBuffer->BindTextureUnit(_PostShader, "TexColorBuffer", kTexColorBufferTexUnit);
     glBindVertexArray(_VertexArray);
     glDrawArrays(GL_TRIANGLES, 0, 6);
     glBindVertexArray(0);
 }
 
-GLvoid PostProcessor::SetEffect(Effects Effect, GLboolean bValue) {
+GLvoid PostProcessor::SetEffectState(Effects Effect, GLboolean bValue) {
     switch (Effect) {
     case Effects::kChaos:
         _bChaos = bValue;

@@ -104,6 +104,9 @@
     <ClInclude Include="Sources\Game\Renderer\TextRenderer.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="Sources\Constants.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Shaders\Vertex.glsl" />

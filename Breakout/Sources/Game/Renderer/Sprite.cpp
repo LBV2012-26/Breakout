@@ -2,6 +2,7 @@
 #include <vector>
 
 #include "../../AssetLoader/AssetManager.h"
+#include "../../Constants.h"
 
 Sprite::Sprite(const Shader* SpriteShader) : _SpriteShader(SpriteShader), _VertexArray(0) {
 #include "Vertices.inc"
@@ -46,7 +47,7 @@ GLvoid Sprite::Draw(const Texture2D* Texture, const glm::vec2& Position, const g
     _SpriteShader->SetUniformMatrix4fv("Model", Model);
     _SpriteShader->SetUniform3fv("SpriteColor", Color);
 
-    Texture->BindTextureUnit(_SpriteShader, "SpriteTex");
+    Texture->BindTextureUnit(_SpriteShader, "SpriteTex", kSpriteTexUnit);
 
     glBindVertexArray(_VertexArray);
     glDrawArrays(GL_TRIANGLES, 0, 6);

@@ -2,6 +2,7 @@
 #include <random>
 
 #include "../../AssetLoader/AssetManager.h"
+#include "../../Constants.h"
 
 ParticleGenerator::ParticleGenerator(const Shader* ParticleShader, const Texture2D* ParticleTex, GLint Amount) :
     _ParticleShader(ParticleShader), _ParticleTex(ParticleTex), _Amount(Amount), _LastUsedParticle(0) {
@@ -67,7 +68,7 @@ GLvoid ParticleGenerator::Draw() {
             _ParticleShader->SetUniform1i("bBurned", _bBurned);
             _ParticleShader->SetUniform2fv("Offset", kParticle.Position);
             _ParticleShader->SetUniform4fv("ParticleBright", kParticle.Bright);
-            _ParticleTex->BindTextureUnit(_ParticleShader, "ParticleTex");
+            _ParticleTex->BindTextureUnit(_ParticleShader, "ParticleTex", kParticleTexUnit);
             glBindVertexArray(_VertexArray);
             glDrawArrays(GL_TRIANGLES, 0, 6);
             glBindVertexArray(0);

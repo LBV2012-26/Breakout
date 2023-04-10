@@ -8,6 +8,10 @@
 
 #include "GetAssetFilepath.h"
 
+#ifdef NDEBUG
+#include <Windows.h>
+#endif // NDEBUG
+
 Texture2D::Texture2D(const std::string& ImageFilename, GLboolean bAutoFillFilepath) {
     GLint ImageWidth    = 0;
     GLint ImageHeight   = 0;
@@ -24,9 +28,13 @@ Texture2D::Texture2D(const std::string& ImageFilename, GLboolean bAutoFillFilepa
     GLubyte* ImageData = stbi_load(ImageFilepath.c_str(), &ImageWidth, &ImageHeight, &ImageChannels, 0);
 
     if (!ImageData) {
+#ifdef _DEBUG
         std::cerr << std::format("Fatal error: Can not open image file: \"{}\": No such fire or directory.", ImageFilepath)
             << std::endl;
         std::system("pause");
+#else
+        MessageBoxA(nullptr, std::format("Fatal error: Can not open image file: \"{}\": No such fire or directory.", ImageFilepath).c_str(), "Texture Load Error", MB_ICONERROR);
+#endif
         std::exit(EXIT_FAILURE);
     }
 
@@ -73,9 +81,9 @@ Texture2D::~Texture2D() {
     glDeleteTextures(1, &_Texture);
 }
 
-GLvoid Texture2D::BindTextureUnit(const Shader* ActivatedShader, const std::string& UniformName) const {
-    glBindTextureUnit(_Texture - 1, _Texture);
-    ActivatedShader->SetUniform1i(UniformName, static_cast<GLint>(_Texture - 1));
+GLvoid Texture2D::BindTextureUnit(const Shader* ActivatedShader, const std::string& UniformName, GLuint Unit) const {
+    glBindTextureUnit(Unit, _Texture);
+    ActivatedShader->SetUniform1i(UniformName, static_cast<GLint>(Unit));
 }
 
 TextureAttachment::TextureAttachment(GLsizei Width, GLsizei Height, GLenum InternalFormat, GLenum Attachment, GLuint Framebuffer) {
@@ -97,14 +105,14 @@ TextureAttachment::~TextureAttachment() {
     glDeleteTextures(1, &_Texture);
 }
 
-GLvoid TextureAttachment::BindTextureUnit(const Shader* ActivatedShader, const std::string& UniformName) const {
-    glBindTextureUnit(_Texture - 1, _Texture);
-    ActivatedShader->SetUniform1i(UniformName, static_cast<GLint>(_Texture - 1));
+GLvoid TextureAttachment::BindTextureUnit(const Shader* ActivatedShader, const std::string& UniformName, GLuint Unit) const {
+    glBindTextureUnit(Unit, _Texture);
+    ActivatedShader->SetUniform1i(UniformName, static_cast<GLint>(Unit));
 }
 
 TextureCharacter::TextureCharacter(const FT_Face& Face) {
-    glCreateTextures(1, GL_TEXTURE_2D, &_Texture);
-    glTextureStorage2D(_Texture, 0, GL_RED, Face->glyph->bitmap.width, Face->glyph->bitmap.rows);
+    glCreateTextures(GL_TEXTURE_2D, 1, &_Texture);
+    glTextureStorage2D(_Texture, 1, GL_R8, Face->glyph->bitmap.width, Face->glyph->bitmap.rows);
     glTextureSubImage2D(_Texture, 0, 0, 0, Face->glyph->bitmap.width, Face->glyph->bitmap.rows, GL_RED, GL_UNSIGNED_BYTE, Face->glyph->bitmap.buffer);
 
     glTextureParameteri(_Texture, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -117,9 +125,9 @@ TextureCharacter::~TextureCharacter() {
     glDeleteTextures(1, &_Texture);
 }
 
-GLvoid TextureCharacter::BindTextureUnit(const Shader* ActivatedShader, const std::string& UniformName) const {
-    glBindTextureUnit(_Texture - 1, _Texture);
-    ActivatedShader->SetUniform1i(UniformName, static_cast<GLint>(_Texture - 1));
+GLvoid TextureCharacter::BindTextureUnit(const Shader* ActivatedShader, const std::string& UniformName, GLuint Unit) const {
+    glBindTextureUnit(Unit, _Texture);
+    ActivatedShader->SetUniform1i(UniformName, static_cast<GLint>(Unit));
 }
 
 // stb_image implementation
