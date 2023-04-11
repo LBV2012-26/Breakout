@@ -21,7 +21,7 @@ public:
     PowerUp() = default;
     PowerUp(const glm::vec2& Position, const Texture2D* SpriteTex, const glm::vec3& Color,
             PowerUpType Type, GLfloat Duration) :
-        GameObject(Position, _kPowerUpSize, SpriteTex, Color, _kVelocity), _Type(Type), _Duration(Duration), _IsActivated() {}
+        GameObject(Position, _kPowerUpSize, SpriteTex, Color, _kVelocity), _Type(Type), _Duration(Duration), _bIsActivated() {}
 
 public:
     PowerUpType GetPowerUpType() const {
@@ -29,7 +29,7 @@ public:
     }
 
     GLboolean GetActiveState() const {
-        return _IsActivated;
+        return _bIsActivated;
     }
 
     GLfloat GetDuration() const {
@@ -37,7 +37,7 @@ public:
     }
 
     GLvoid SetActiveState(GLboolean bValue) {
-        _IsActivated = bValue;
+        _bIsActivated = bValue;
     }
 
     GLvoid SetDuration(GLfloat Value) {
@@ -47,7 +47,7 @@ public:
 private:
     PowerUpType     _Type;
     GLfloat         _Duration;
-    GLboolean       _IsActivated;
+    GLboolean       _bIsActivated;
 };
 
 #endif // !GAME_GAMEOBJECT_POWERUP_HPP_

@@ -9,7 +9,6 @@
 #include "Game/Game.h"
 
 #ifdef NDEBUG
-#include <tchar.h>
 #include <Windows.h>
 #endif // NDEBUG
 
@@ -30,7 +29,7 @@ int main() {
         std::cerr << "Error: Failed to initialize GLFW." << std::endl;
         std::system("pause");
 #else
-        MessageBox(nullptr, L"Failed to initialize GLFW.", _T("Error"), MB_ICONERROR);
+        MessageBoxA(nullptr, "Failed to initialize GLFW.", "Error", MB_ICONERROR);
 #endif // _DEBUG
         return EXIT_FAILURE;
     }
@@ -48,7 +47,7 @@ int main() {
         glfwTerminate();
         std::system("pause");
 #else
-        MessageBox(nullptr, L"Failed to create GLFW window.", _T("Error"), MB_ICONERROR);
+        MessageBoxA(nullptr, "Failed to create GLFW window.", "Error", MB_ICONERROR);
 #endif // _DEBUG
         return EXIT_FAILURE;
     }
@@ -61,7 +60,7 @@ int main() {
         glfwTerminate();
         std::system("pause");
 #else
-        MessageBox(nullptr, L"Failed to initialize Glad.", _T("Error"), MB_ICONERROR);
+        MessageBoxA(nullptr, "Failed to initialize Glad.", "Error", MB_ICONERROR);
 #endif // _DEBUG
         return EXIT_FAILURE;
     }
