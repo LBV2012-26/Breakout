@@ -23,15 +23,15 @@ public:
     }
 
     GLboolean GetPassThroughState() const {
-        return _PassThrough;
+        return _bPassThrough;
     }
 
     GLboolean GetStickyState() const {
-        return _Sticky;
+        return _bSticky;
     }
 
     GLboolean GetStuckState() const {
-        return _Stuck;
+        return _bStuck;
     }
 
     GLvoid SetRadius(GLfloat Value) {
@@ -39,22 +39,22 @@ public:
     }
 
     GLvoid SetPassThroughState(GLboolean bValue) {
-        _PassThrough = bValue;
+        _bPassThrough = bValue;
     }
 
     GLvoid SetStickyState(GLboolean bValue) {
-        _Sticky = bValue;
+        _bSticky = bValue;
     }
 
     GLvoid SetStuckState(GLboolean bValue) {
-        _Stuck = bValue;
+        _bStuck = bValue;
     }
 
 private:
     GLfloat   _Radius;
-    GLboolean _PassThrough;
-    GLboolean _Sticky;
-    GLboolean _Stuck;
+    GLboolean _bPassThrough;
+    GLboolean _bSticky;
+    GLboolean _bStuck;
 };
 
 #endif // !GAME_GAMEOBJECT_BALLOBJECT_H_

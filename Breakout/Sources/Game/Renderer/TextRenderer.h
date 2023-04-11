@@ -10,7 +10,8 @@
 #include <glad/glad.h>
 #include <glm/glm.hpp>
 
-#include "AssetLoader/Shader.h"
+#include "../../AssetLoader/Shader.h"
+#include "../../AssetLoader/Texture.h"
 
 class TextRenderer {
 private:
