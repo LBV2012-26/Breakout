@@ -39,5 +39,5 @@ glm::vec2 BallObject::Move(GLfloat DeltaTime, GLint WindowWidth) {
 GLvoid BallObject::Reset(const glm::vec2& Position, const glm::vec2& Velocity) {
     _Position = Position;
     _Velocity = Velocity;
-    _Stuck    = GL_TRUE;
+    _bStuck   = GL_TRUE;
 }
