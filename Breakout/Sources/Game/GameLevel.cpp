@@ -15,7 +15,6 @@
 #include "../AssetLoader/GetAssetFilepath.h"
 
 #ifdef NDEBUG
-#include <tchar.h>
 #include <Windows.h>
 #endif // NDEBUG
 
@@ -34,8 +33,7 @@ GameLevel::GameLevel(const std::string& Filename, GLint LevelWidth, GLint LevelH
                   << std::endl;
         std::system("pause");
 #else
-        std::wstring WFilepath(Filepath.begin(), Filepath.end());
-        MessageBox(nullptr, std::format(_T("Fatal error: can not open level map file: \"{}\": No such file or directory."), WFilepath).c_str(), _T("Level Load Failed"), MB_ICONERROR);
+        MessageBoxA(nullptr, std::format("Fatal error: can not open level map file: \"{}\": No such file or directory.", Filepath).c_str(), "Level Load Failed", MB_ICONERROR);
 #endif
         std::exit(EXIT_FAILURE);
     }
