@@ -8,11 +8,11 @@
 #include "../../AssetLoader/Shader.h"
 #include "../../AssetLoader/Texture.h"
 
-class Sprite {
+class SpriteRenderer {
 public:
-    Sprite() = default;
-    Sprite(const Shader* SpriteShader);
-    ~Sprite();
+    SpriteRenderer() = default;
+    SpriteRenderer(const Shader* SpriteShader);
+    ~SpriteRenderer();
 
     GLvoid Draw(const Texture2D* Texture,
                 const glm::vec2& Position,

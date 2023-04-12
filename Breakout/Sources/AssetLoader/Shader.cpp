@@ -111,7 +111,7 @@ GLvoid Shader::InsertMacros(const std::vector<std::string>& Macros, GLenum Shade
         }
     }();
 
-    GLuint                 InsertedMacroCount = 0;
+    GLint                  InsertedMacroCount = 0;
     std::string::size_type InsertedCharLength = 0;
 
     for (const std::string& kMacro : Macros) {

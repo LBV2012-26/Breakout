@@ -18,6 +18,8 @@ public:
     ~AssetManager();
 
 public:
+    // Short functions implement in class to inline.
+    // ---------------------------------------------
     static GLvoid LoadShader(const std::string& Name,
                              const std::vector<std::string>& SourceFiles,
                              const std::vector<std::string>& Macros = { "NULL" }) {
@@ -37,6 +39,8 @@ public:
     }
 
 private:
+    // Test smart pointers.
+    // --------------------
     static std::map<std::string, std::shared_ptr<const Shader>>    _kShaders;
     static std::map<std::string, std::shared_ptr<const Texture2D>> _kTextures;
 };

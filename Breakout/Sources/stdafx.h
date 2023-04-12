@@ -37,8 +37,9 @@
 #include "Game/GameObject/GameObject.h"
 #include "Game/GameObject/PowerUp.hpp"
 #include "Game/Renderer/PostProcessor.h"
-#include "Game/Renderer/Sprite.h"
+#include "Game/Renderer/SpriteRenderer.h"
 #include "Game/Game.h"
 #include "Game/GameLevel.h"
+#include "Constants.h"
 
 #endif // !STDAFX_H_

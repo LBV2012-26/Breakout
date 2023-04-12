@@ -33,11 +33,10 @@ private:
     GLvoid LoadFont(const std::string& FontFilepath, FT_UInt FontSize);
 
 private:
-    const Shader*               _TextShader;
-    std::map<GLchar, Character> _Characters;
-
-    GLuint                      _VertexArray;
-    GLuint                      _VertexBuffer;
+    const Shader*                _TextShader;
+    std::map<GLubyte, Character> _Characters;
+    GLuint                       _VertexArray;
+    GLuint                       _VertexBuffer;
 };
 
 #endif // !GAME_RENDERER_TEXTRENDERER_H_

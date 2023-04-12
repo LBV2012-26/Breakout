@@ -1,6 +1,7 @@
 #pragma once
 #ifndef GAME_RENDERER_POSTPROCESSOR_H_
 #define GAME_RENDERER_POSTPROCESSOR_H_
+#pragma warning(disable : 4715)
 
 #include <cassert>
 
@@ -9,7 +10,6 @@
 
 #include "../../AssetLoader/Shader.h"
 #include "../../AssetLoader/Texture.h"
-#include "Sprite.h"
 
 enum class Effects {
     kChaos, kConfuse, kShake
@@ -32,8 +32,7 @@ public:
     }
 
     GLvoid EndRender() {
-        glBlitNamedFramebuffer(_MultiSampledFramebuffer, _IntermediateFramebuffer,
-                               0, 0, _Width, _Height, 0, 0, _Width, _Height,
+        glBlitNamedFramebuffer(_MultiSampledFramebuffer, _IntermediateFramebuffer, 0, 0, _Width, _Height, 0, 0, _Width, _Height,
                                GL_COLOR_BUFFER_BIT, GL_NEAREST);
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
@@ -68,4 +67,5 @@ private:
     GLboolean                _bShake;
 };
 
+#pragma warning(default : 4715)
 #endif // !GAME_RENDERER_POSTPROCESSOR_H_

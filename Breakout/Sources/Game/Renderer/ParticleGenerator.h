@@ -7,9 +7,9 @@
 #include <glad/glad.h>
 #include <glm/glm.hpp>
 
+#include "../GameObject/GameObject.h"
 #include "../../AssetLoader/Shader.h"
 #include "../../AssetLoader/Texture.h"
-#include "../GameObject/GameObject.h"
 
 class ParticleGenerator {
 private:
@@ -42,8 +42,9 @@ private:
     std::vector<Particle> _Particles;
     GLint                 _Amount;
     GLint                 _LastUsedParticle;
-    GLuint                _VertexArray;
     GLboolean             _bBurned;
+
+    GLuint                _VertexArray;
     const Shader*         _ParticleShader;
     const Texture2D*      _ParticleTex;
 };

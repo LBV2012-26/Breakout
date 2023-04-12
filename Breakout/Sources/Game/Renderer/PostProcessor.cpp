@@ -4,7 +4,7 @@
 #include <iostream>
 #include <vector>
 
-#include "glm/glm.hpp"
+#include <glm/glm.hpp>
 
 #include "../../Constants.h"
 
@@ -67,9 +67,8 @@ PostProcessor::~PostProcessor() {
     glDeleteFramebuffers(1, &_IntermediateFramebuffer);
     glDeleteRenderbuffers(1, &_Renderbuffer);
 
-    //Don't delete pointer there
-    //The memory will be released when AssetManager execute destruct function.
-    //-----------------------------------------------------------------------
+    // The memory will release after AssetManager execute destruction function.
+    // ------------------------------------------------------------------------
     // if (_PostShader) {
     //     delete _PostShader;
     //     _PostShader = nullptr;
@@ -83,10 +82,10 @@ PostProcessor::~PostProcessor() {
 
 GLvoid PostProcessor::Render(GLfloat Time) {
     _PostShader->UseProgram();
-    _PostShader->SetUniform1f("Time", Time);
-    _PostShader->SetUniform1i("bChaos", _bChaos);
+    _PostShader->SetUniform1f("Time",     Time);
+    _PostShader->SetUniform1i("bChaos",   _bChaos);
     _PostShader->SetUniform1i("bConfuse", _bConfuse);
-    _PostShader->SetUniform1i("bShake", _bShake);
+    _PostShader->SetUniform1i("bShake",   _bShake);
 
     _TexColorBuffer->BindTextureUnit(_PostShader, "TexColorBuffer", kTexColorBufferTexUnit);
     glBindVertexArray(_VertexArray);

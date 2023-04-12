@@ -1,5 +1,7 @@
+#pragma warning(disable : 4715)
 #include "GameLevel.h"
 
+#include <cassert>
 #include <cstdlib>
 #include <cstring>
 #include <filesystem>
@@ -10,7 +12,7 @@
 #include <sstream>
 #include <string>
 
-#include "GLFW/glfw3.h"
+#include <GLFW/glfw3.h>
 
 #include "../AssetLoader/GetAssetFilepath.h"
 
@@ -67,10 +69,10 @@ GameLevel::~GameLevel() {
     }
 }
 
-GLvoid GameLevel::Draw(const Sprite* Renderer) {
+GLvoid GameLevel::Draw(const SpriteRenderer* Sprite) {
     for (const auto& kBrick : _Bricks) {
         if (!kBrick->GetDestructionState()) {
-            kBrick->Draw(Renderer);
+            kBrick->Draw(Sprite);
         }
     }
 }
@@ -101,16 +103,18 @@ GLvoid GameLevel::Init(const std::vector<std::vector<GLint>>& BrickData, GLint L
                 _Bricks.emplace_back(Brick);
             } else if (BrickData[y][x] > 1) {
                 auto Color = [&BrickData, x, y]() -> glm::vec3 {
-                    if (BrickData[y][x] == 2)
+                    switch (BrickData[y][x]) {
+                    case 2:
                         return { 0.2f, 0.6f, 1.0f };
-                    else if (BrickData[y][x] == 3)
+                    case 3:
                         return { 0.0f, 0.7f, 0.0f };
-                    else if (BrickData[y][x] == 4)
+                    case 4:
                         return { 0.8f, 0.8f, 0.4f };
-                    else if (BrickData[y][x] == 5)
+                    case 5:
                         return { 1.0f, 0.5f, 0.0f };
-                    else
-                        return { 0, 0, 0 };
+                    default:
+                        assert(GL_FALSE);
+                    }
                 }();
 
                 glm::vec2 Position(UnitWidth * x, UnitHeight * y);

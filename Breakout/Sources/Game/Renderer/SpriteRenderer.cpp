@@ -1,16 +1,16 @@
-#include "Sprite.h"
+#include "SpriteRenderer.h"
 #include <vector>
 
 #include "../../AssetLoader/AssetManager.h"
 #include "../../Constants.h"
 
-Sprite::Sprite(const Shader* SpriteShader) : _SpriteShader(SpriteShader), _VertexArray(0) {
-#include "Vertices.inc"
-
+SpriteRenderer::SpriteRenderer(const Shader* SpriteShader) : _SpriteShader(SpriteShader), _VertexArray(0) {
     GLuint VertexBuffer = 0;
 
     glCreateVertexArrays(1, &_VertexArray);
     glCreateBuffers(1, &VertexBuffer);
+
+#include "Vertices.inc"
 
     glNamedBufferData(VertexBuffer, Vertices.size() * sizeof(GLfloat), Vertices.data(), GL_STATIC_DRAW);
     glVertexArrayVertexBuffer(_VertexArray, 0, VertexBuffer, 0, 4 * sizeof(GLfloat));
@@ -22,19 +22,18 @@ Sprite::Sprite(const Shader* SpriteShader) : _SpriteShader(SpriteShader), _Verte
     glDeleteBuffers(1, &VertexBuffer);
 }
 
-Sprite::~Sprite() {
+SpriteRenderer::~SpriteRenderer() {
     glDeleteVertexArrays(1, &_VertexArray);
 
-    // Don't delete pointer there
-    // The memory will be released when AssetManager execute destruct function.
-    // -----------------------------------------------------------------------
+    // The memory will release after AssetManager execute destruction function.
+    // ------------------------------------------------------------------------
     // if (_SpriteShader) {
     //     delete _SpriteShader;
     //     _SpriteShader = nullptr;
     // }
 }
 
-GLvoid Sprite::Draw(const Texture2D* Texture, const glm::vec2& Position, const glm::vec2& Size, GLfloat Rotation, const glm::vec3& Color) const {
+GLvoid SpriteRenderer::Draw(const Texture2D* Texture, const glm::vec2& Position, const glm::vec2& Size, GLfloat Rotation, const glm::vec3& Color) const {
     glm::mat4x4 Model(1.0f);
 
     Model = glm::translate(Model, glm::vec3(Position, 0.0f));

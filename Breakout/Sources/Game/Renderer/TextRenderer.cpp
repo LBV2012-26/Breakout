@@ -14,8 +14,7 @@
 #include <Windows.h>
 #endif // NDEBUG
 
-TextRenderer::TextRenderer(const Shader* TextShader, const std::string& FontFilename,
-                           GLsizei Width, GLsizei Height, FT_UInt FontSize) :
+TextRenderer::TextRenderer(const Shader* TextShader, const std::string& FontFilename, GLsizei Width, GLsizei Height, FT_UInt FontSize) :
     _TextShader(TextShader) {
     glm::mat4x4 Projection = glm::ortho(0.0f, static_cast<GLfloat>(Width), static_cast<GLfloat>(Height), 0.0f);
     _TextShader->UseProgram();
@@ -25,7 +24,7 @@ TextRenderer::TextRenderer(const Shader* TextShader, const std::string& FontFile
     glCreateVertexArrays(1, &_VertexArray);
     glCreateBuffers(1, &_VertexBuffer);
 
-    glNamedBufferData(_VertexBuffer, 4ULL * 6ULL * sizeof(GLfloat), nullptr, GL_DYNAMIC_DRAW);
+    glNamedBufferData(_VertexBuffer, 24ULL * sizeof(GLfloat), nullptr, GL_DYNAMIC_DRAW);
     glVertexArrayVertexBuffer(_VertexArray, 0, _VertexBuffer, 0, 4 * sizeof(GLfloat));
 
     glEnableVertexArrayAttrib(_VertexArray, 0);
@@ -51,12 +50,11 @@ GLvoid TextRenderer::Draw(const std::string& Text, GLfloat x, GLfloat y, GLfloat
     glBindVertexArray(_VertexArray);
 
     for (const auto CharCode : Text) {
-        Character Char = _Characters[CharCode];
-
-        GLfloat PositionX = x + Char.Bearings.x * Scale;
-        GLfloat PositionY = y + (_Characters['H'].Bearings.y - Char.Bearings.y) * Scale;
-        GLfloat Width     = Char.Size.x * Scale;
-        GLfloat Height    = Char.Size.y * Scale;
+        Character Char      = _Characters[CharCode];
+        GLfloat   PositionX = x + Char.Bearings.x * Scale;
+        GLfloat   PositionY = y + (_Characters['H'].Bearings.y - Char.Bearings.y) * Scale;
+        GLfloat   Width     = Char.Size.x * Scale;
+        GLfloat   Height    = Char.Size.y * Scale;
 
         std::vector<GLfloat> Vertices{
             PositionX,         PositionY + Height, 0.0f, 1.0f,
@@ -92,7 +90,7 @@ GLvoid TextRenderer::LoadFont(const std::string& FontFilepath, FT_UInt FontSize)
     if (FT_New_Face(Library, FontFilepath.c_str(), 0, &Face)) {
 #ifdef _DEBUG
         std::cerr << std::format("Fatal error: Can not open font file \"{}\": No such file or directory.", FontFilepath)
-            << std::endl;
+                  << std::endl;
         std::system("pause");
 #else
         MessageBoxA(nullptr, std::format("Fatal error: Can not open font file \"{}\": No such file or directory.", FontFilepath).c_str(), "Font Load Error", MB_ICONERROR);

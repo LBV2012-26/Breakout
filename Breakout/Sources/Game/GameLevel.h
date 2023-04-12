@@ -6,7 +6,7 @@
 #include <glad/glad.h>
 
 #include "GameObject/GameObject.h"
-#include "Renderer/Sprite.h"
+#include "Renderer/SpriteRenderer.h"
 #include "../AssetLoader/AssetManager.h"
 
 class GameLevel {
@@ -18,10 +18,12 @@ public:
     GameLevel(const std::string& Filename, GLint LevelWidth, GLint LevelHeight);
     ~GameLevel();
 
-    GLvoid    Draw(const Sprite* Renderer);
+    GLvoid    Draw(const SpriteRenderer* Sprite);
     GLboolean IsCompleted();
 
 public:
+    // Return normal reference to modified properties instead of using extra setters.
+    // ------------------------------------------------------------------------------
     std::vector<GameObject*>& GetBricks() {
         return _Bricks;
     }

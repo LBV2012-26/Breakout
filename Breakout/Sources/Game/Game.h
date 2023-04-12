@@ -14,9 +14,14 @@
 #include "GameObject/PowerUp.hpp"
 #include "Renderer/ParticleGenerator.h"
 #include "Renderer/PostProcessor.h"
-#include "Renderer/Sprite.h"
+#include "Renderer/SpriteRenderer.h"
 #include "Renderer/TextRenderer.h"
 #include "GameLevel.h"
+
+constexpr glm::vec2 kPaddleVelocity = glm::vec2(500.0f);
+constexpr glm::vec2 kPaddleSize = glm::vec2(150.0f, 30.0f);
+constexpr glm::vec2 kBallVelocity = glm::vec2(150.0f, -525.0f);
+constexpr GLfloat   kBallRadius = 25.0f;
 
 class Game {
 private:
@@ -48,11 +53,6 @@ public:
         _ProcessedKeys[Index] = bValue;
     }
 
-    GLvoid ResetPlayer() {
-        _Paddle->SetPosition(glm::vec2(_WindowWidth / 2.0f - _PaddleSize.x / 2.0f, _WindowHeight - _PaddleSize.y));
-        _Ball->Reset(_Paddle->GetPosition() + glm::vec2(_PaddleSize.x / 2.0f - _BallRadius, -_BallRadius * 2.0f), _BallVelocity);
-    }
-
 private:
     Collision CheckCollision(const BallObject* Ball, const GameObject* Brick);
     GLboolean CheckCollision(const PowerUp* PowerUp, const GameObject* Paddle);
@@ -64,6 +64,8 @@ private:
     GLboolean IsOtherPowerUpActivated(PowerUpType Type);
     GLvoid    UpdatePowerUps(GLfloat DeltaTime);
     GLvoid    ResetLevel();
+    GLvoid    ResetPlayer();
+    GLvoid    ClearAllPositivePowerUps();
 
 private:
     std::array<GLboolean, 1024> _Keys;
@@ -76,14 +78,10 @@ private:
     std::vector<GameLevel*>     _Levels;
     std::vector<PowerUp*>       _PowerUps;
     GLfloat                     _ShakeTime;
-    glm::vec2                   _PaddleVelocity;
-    glm::vec2                   _PaddleSize;
-    glm::vec2                   _BallVelocity;
-    GLfloat                     _BallRadius;
     GLint                       _StickyChance;
 
     AssetManager*               _Assets;
-    Sprite*                     _Renderer;
+    SpriteRenderer*             _Sprite;
     GameObject*                 _Paddle;
     BallObject*                 _Ball;
     ParticleGenerator*          _Particle;

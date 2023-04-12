@@ -19,9 +19,8 @@ enum class PowerUpType {
 class PowerUp : public GameObject {
 public:
     PowerUp() = default;
-    PowerUp(const glm::vec2& Position, const Texture2D* SpriteTex, const glm::vec3& Color,
-            PowerUpType Type, GLfloat Duration) :
-        GameObject(Position, _kPowerUpSize, SpriteTex, Color, _kVelocity), _Type(Type), _Duration(Duration), _bIsActivated() {}
+    PowerUp(const glm::vec2& Position, const Texture2D* SpriteTex, const glm::vec3& Color, PowerUpType Type, GLfloat Duration) :
+        GameObject(Position, _kPowerUpSize, SpriteTex, Color, _kVelocity), _Type(Type), _Duration(Duration), _bIsActivated(GL_FALSE) {}
 
 public:
     PowerUpType GetPowerUpType() const {
@@ -45,9 +44,9 @@ public:
     }
 
 private:
-    PowerUpType     _Type;
-    GLfloat         _Duration;
-    GLboolean       _bIsActivated;
+    PowerUpType _Type;
+    GLfloat     _Duration;
+    GLboolean   _bIsActivated;
 };
 
 #endif // !GAME_GAMEOBJECT_POWERUP_HPP_

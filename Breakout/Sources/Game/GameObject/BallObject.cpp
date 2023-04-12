@@ -6,9 +6,8 @@ BallObject::BallObject(const glm::vec2& Position, GLfloat Radius, const glm::vec
     GameObject(Position, glm::vec2(Radius * 2.0f), SpriteTex, glm::vec3(1.0f), Velocity), _Radius(Radius), _bStuck(GL_TRUE), _bSticky(GL_FALSE) {}
 
 BallObject::~BallObject() {
-    // Don't delete pointer there
-    // The memory will be released when AssetManager execute destruct function.
-    // -----------------------------------------------------------------------
+    // The memory will release after AssetManager execute destruction function.
+    // ------------------------------------------------------------------------
     // if (_SpriteTex) {
     //     delete _SpriteTex;
     //     _SpriteTex = nullptr;

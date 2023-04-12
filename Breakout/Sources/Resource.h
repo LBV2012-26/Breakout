@@ -1,6 +1,6 @@
 //{{NO_DEPENDENCIES}}
 // Microsoft Visual C++ 生成的包含文件。
-// 供 D:\Documents\Sources\Common\C++\Breakout\Breakout\Breakout.rc 使用
+// 供 Breakout.rc 使用
 //
 #define IDI_ICON1                       103
 

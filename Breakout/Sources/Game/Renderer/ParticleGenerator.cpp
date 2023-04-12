@@ -6,12 +6,12 @@
 
 ParticleGenerator::ParticleGenerator(const Shader* ParticleShader, const Texture2D* ParticleTex, GLint Amount) :
     _ParticleShader(ParticleShader), _ParticleTex(ParticleTex), _Amount(Amount), _LastUsedParticle(0) {
-#include "Vertices.inc"
-
     GLuint VertexBuffer = 0;
 
     glCreateVertexArrays(1, &_VertexArray);
     glCreateBuffers(1, &VertexBuffer);
+
+#include "Vertices.inc"
 
     glNamedBufferData(VertexBuffer, Vertices.size() * sizeof(GLfloat), Vertices.data(), GL_STATIC_DRAW);
     glVertexArrayVertexBuffer(_VertexArray, 0, VertexBuffer, 0, 4 * sizeof(GLfloat));
@@ -30,9 +30,8 @@ ParticleGenerator::ParticleGenerator(const Shader* ParticleShader, const Texture
 ParticleGenerator::~ParticleGenerator() {
     glDeleteVertexArrays(1, &_VertexArray);
 
-    // Don't delete pointer there
-    // The memory will be released when AssetManager execute destruct function.
-    // -----------------------------------------------------------------------
+    // The memory will release after AssetManager execute destruction function.
+    // ------------------------------------------------------------------------
     // if (_ParticleShader) {
     //     delete _ParticleShader;
     //     _ParticleShader = nullptr;
@@ -101,7 +100,7 @@ GLvoid ParticleGenerator::RespawnParticle(const GameObject* Object, const glm::v
     std::mt19937 RandomEngine;
     RandomEngine.seed(std::random_device{}());
     std::uniform_real_distribution<GLfloat> RandomGenerator(0.0f, 100.0f);
-    GLfloat Random      = (RandomGenerator(RandomEngine) - 50) / 10.0f;
+    GLfloat Random      = (RandomGenerator(RandomEngine) - 50)    / 10.0f;
     GLfloat RandomColor =  RandomGenerator(RandomEngine) / 100.0f + 0.5f;
 
     UnusedParticle.Position = Object->GetPosition() + Random + Offset;

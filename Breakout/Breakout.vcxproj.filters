@@ -33,7 +33,7 @@
     <ClCompile Include="Sources\AssetLoader\AssetManager.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Sources\Game\Renderer\Sprite.cpp">
+    <ClCompile Include="Sources\Game\Renderer\SpriteRenderer.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Sources\Game\GameLevel.cpp">
@@ -74,7 +74,7 @@
     <ClInclude Include="Sources\AssetLoader\AssetManager.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Sources\Game\Renderer\Sprite.h">
+    <ClInclude Include="Sources\Game\Renderer\SpriteRenderer.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="Sources\Game\GameLevel.h">

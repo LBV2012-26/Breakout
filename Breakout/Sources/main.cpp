@@ -1,3 +1,6 @@
+#pragma warning(disable : 4715)
+
+#include <cassert>
 #include <cstdlib>
 #include <format>
 #include <iostream>
@@ -38,7 +41,6 @@ int main() {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
-    glfwWindowHint(GLFW_SAMPLES, 4);
 
     GLFWwindow* Window = glfwCreateWindow(kWindowWidth, kWindowHeight, kWindowTitle, nullptr, nullptr);
     if (!Window) {
@@ -149,7 +151,7 @@ GLvoid MessageCallback(GLenum Source, GLenum Type, GLuint Id, GLenum Severity, G
         case GL_DEBUG_SOURCE_WINDOW_SYSTEM:
             return "WINDOW_SYSTEM";
         default:
-            return "";
+            assert(GL_FALSE);
         }
     }();
 
@@ -170,7 +172,7 @@ GLvoid MessageCallback(GLenum Source, GLenum Type, GLuint Id, GLenum Severity, G
         case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR:
             return "UNDEFINED_BEHAVIOR";
         default:
-            return "";
+            assert(GL_FALSE);
         }
     }();
 
@@ -185,7 +187,7 @@ GLvoid MessageCallback(GLenum Source, GLenum Type, GLuint Id, GLenum Severity, G
         case GL_DEBUG_SEVERITY_NOTIFICATION:
             return "NOTIFICATION";
         default:
-            return "";
+            assert(GL_FALSE);
         }
     }();
 
@@ -194,8 +196,10 @@ GLvoid MessageCallback(GLenum Source, GLenum Type, GLuint Id, GLenum Severity, G
 }
 
 GLvoid Terminate(GLFWwindow* Window) {
-    delete kBreakout;
-    kBreakout = nullptr;
+    if (kBreakout) {
+        delete kBreakout;
+        kBreakout = nullptr;
+    }
 
     glfwDestroyWindow(Window);
     glfwTerminate();

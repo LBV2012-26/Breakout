@@ -155,7 +155,7 @@
     <ClCompile Include="Sources\Game\GameObject\GameObject.cpp" />
     <ClCompile Include="Sources\Game\GameLevel.cpp" />
     <ClCompile Include="Sources\AssetLoader\GetAssetFilepath.cpp" />
-    <ClCompile Include="Sources\Game\Renderer\Sprite.cpp" />
+    <ClCompile Include="Sources\Game\Renderer\SpriteRenderer.cpp" />
     <ClCompile Include="Sources\main.cpp" />
     <ClCompile Include="Sources\stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
@@ -177,7 +177,7 @@
     <ClInclude Include="Sources\Game\GameObject\GameObject.h" />
     <ClInclude Include="Sources\Game\GameLevel.h" />
     <ClInclude Include="Sources\AssetLoader\GetAssetFilepath.h" />
-    <ClInclude Include="Sources\Game\Renderer\Sprite.h" />
+    <ClInclude Include="Sources\Game\Renderer\SpriteRenderer.h" />
     <ClInclude Include="Sources\stdafx.h" />
     <ClInclude Include="Sources\Game\Renderer\TextRenderer.h" />
   </ItemGroup>

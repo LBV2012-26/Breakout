@@ -5,7 +5,7 @@
 #include <glad/glad.h>
 #include <glm/glm.hpp>
 
-#include "../Renderer/Sprite.h"
+#include "../Renderer/SpriteRenderer.h"
 #include "../../AssetLoader/Texture.h"
 
 class GameObject {
@@ -18,7 +18,7 @@ public:
                const glm::vec2& Velocity = glm::vec2(0.0f));
     ~GameObject();
 
-    virtual GLvoid Draw(const Sprite* Renderer) const;
+    virtual GLvoid Draw(const SpriteRenderer* Sprite) const;
 
 public:
     const glm::vec2& GetPosition() const {

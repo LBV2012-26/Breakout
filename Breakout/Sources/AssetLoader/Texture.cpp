@@ -30,7 +30,7 @@ Texture2D::Texture2D(const std::string& ImageFilename, GLboolean bAutoFillFilepa
     if (!ImageData) {
 #ifdef _DEBUG
         std::cerr << std::format("Fatal error: Can not open image file: \"{}\": No such fire or directory.", ImageFilepath)
-            << std::endl;
+                  << std::endl;
         std::system("pause");
 #else
         MessageBoxA(nullptr, std::format("Fatal error: Can not open image file: \"{}\": No such fire or directory.", ImageFilepath).c_str(), "Texture Load Error", MB_ICONERROR);
@@ -131,5 +131,6 @@ GLvoid TextureCharacter::BindTextureUnit(const Shader* ActivatedShader, const st
 }
 
 // stb_image implementation
+// ------------------------
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
