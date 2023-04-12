@@ -78,6 +78,8 @@ private:
     std::vector<GameLevel*>     _Levels;
     std::vector<PowerUp*>       _PowerUps;
     GLfloat                     _ShakeTime;
+    GLint                       _PosPowerUpChance;
+    GLint                       _NegPowerUpChance;
     GLint                       _StickyChance;
 
     AssetManager*               _Assets;

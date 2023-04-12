@@ -13,7 +13,7 @@
 #include "../Constants.h"
 
 Game::Game(GLint WindowWidth, GLint WindowHeight) :
-    _Keys(), _State(GameState::kMenu), _Lives(3), _ShakeTime(0.0f), _LevelIndex(0), _StickyChance(0),
+    _Keys(), _State(GameState::kMenu), _Lives(3), _ShakeTime(0.0f), _LevelIndex(0), _StickyChance(0), _PosPowerUpChance(50), _NegPowerUpChance(25),
     _WindowWidth(static_cast<GLfloat>(WindowWidth)), _WindowHeight(static_cast<GLfloat>(WindowHeight)),
     _Assets(new AssetManager), _Sprite(nullptr), _Paddle(nullptr), _Ball(nullptr), _PostEffect(nullptr), _SoundEngine(nullptr) {
     _Assets->LoadShader("Sprite",     { "Vertex.glsl",             "Sprite.glsl" });
@@ -371,22 +371,22 @@ GLboolean Game::ShouldSpawnPowerUp(GLint Chance) {
 }
 
 GLvoid Game::SpawnPowerUps(const GameObject* Brick) {
-    if (ShouldSpawnPowerUp(25)) {
+    if (ShouldSpawnPowerUp(_NegPowerUpChance)) {
         _PowerUps.emplace_back(new PowerUp(Brick->GetPosition(), _Assets->GetTexture("Chaos"),
-                                           glm::vec3(0.9f, 0.25f, 0.25f), PowerUpType::kChaos, 15.0f));
-    } else if (ShouldSpawnPowerUp(25)) {
+                                           glm::vec3(0.9f, 0.25f, 0.25f), PowerUpType::kChaos, 10.0f));
+    } else if (ShouldSpawnPowerUp(_NegPowerUpChance)) {
         _PowerUps.emplace_back(new PowerUp(Brick->GetPosition(), _Assets->GetTexture("Confuse"),
-                                           glm::vec3(0.5f, 1.0f, 0.5f), PowerUpType::kConfuse, 15.0f));
-    } else if (ShouldSpawnPowerUp(50)) {
+                                           glm::vec3(0.5f, 1.0f, 0.5f), PowerUpType::kConfuse, 10.0f));
+    } else if (ShouldSpawnPowerUp(_PosPowerUpChance)) {
         _PowerUps.emplace_back(new PowerUp(Brick->GetPosition(), _Assets->GetTexture("PadSizeIncrease"),
-                                           glm::vec3(1.0f, 0.6f, 0.4), PowerUpType::kPadSizeIncrease, 10.0f));
-    } else if (ShouldSpawnPowerUp(50)) {
+                                           glm::vec3(1.0f, 0.6f, 0.4), PowerUpType::kPadSizeIncrease, 5.0f));
+    } else if (ShouldSpawnPowerUp(_PosPowerUpChance)) {
         _PowerUps.emplace_back(new PowerUp(Brick->GetPosition(), _Assets->GetTexture("PassThrough"),
                                            glm::vec3(1.0f, 0.3f, 0.3f), PowerUpType::kPassThrough, 10.0f));
-    } else if (ShouldSpawnPowerUp(50)) {
+    } else if (ShouldSpawnPowerUp(_PosPowerUpChance)) {
         _PowerUps.emplace_back(new PowerUp(Brick->GetPosition(), _Assets->GetTexture("Speed"),
                                            glm::vec3(0.5f, 0.5f, 1.0f), PowerUpType::kSpeed, 5.0f));
-    } else if (ShouldSpawnPowerUp(50)) {
+    } else if (ShouldSpawnPowerUp(_PosPowerUpChance)) {
         _PowerUps.emplace_back(new PowerUp(Brick->GetPosition(), _Assets->GetTexture("Sticky"),
                                            glm::vec3(1.0f, 0.5f, 1.0f), PowerUpType::kSticky, 0.0f));
     }
@@ -396,14 +396,18 @@ GLvoid Game::ActivatePowerUp(const PowerUp* CollidedPowerUp) {
     switch (CollidedPowerUp->GetPowerUpType()) {
     case PowerUpType::kChaos: {
         _PostEffect->SetEffectState(Effects::kChaos, GL_TRUE);
+        _PosPowerUpChance = 20;
+        _NegPowerUpChance = 5;
         break;
     }
     case PowerUpType::kConfuse: {
         _PostEffect->SetEffectState(Effects::kConfuse, GL_TRUE);
+        _PosPowerUpChance = 20;
+        _NegPowerUpChance = 5;
         break;
     }
     case PowerUpType::kPadSizeIncrease: {
-        _Paddle->SetSizeX(_Paddle->GetSize().x * 1.5f);
+        _Paddle->SetSizeX(_Paddle->GetSize().x * 1.2f);
         break;
     }
     case PowerUpType::kPassThrough: {
@@ -413,9 +417,7 @@ GLvoid Game::ActivatePowerUp(const PowerUp* CollidedPowerUp) {
         break;
     }
     case PowerUpType::kSpeed: {
-        if (!IsOtherPowerUpActivated(PowerUpType::kSpeed)) {
-            _Paddle->SetVelocity({ _Paddle->GetVelocity() * 2.0f });
-        }
+        _Paddle->SetVelocity({ _Paddle->GetVelocity() * 1.5f });
         break;
     }
     case PowerUpType::kSticky: {
@@ -440,14 +442,18 @@ GLvoid Game::UpdatePowerUps(GLfloat DeltaTime) {
                 if (PowerUp->GetPowerUpType() == PowerUpType::kChaos) {
                     if (!IsOtherPowerUpActivated(PowerUpType::kChaos)) {
                         _PostEffect->SetEffectState(Effects::kChaos, GL_FALSE);
+                        _PosPowerUpChance = 50;
+                        _NegPowerUpChance = 25;
                     }
                 } else if (PowerUp->GetPowerUpType() == PowerUpType::kConfuse) {
                     if (!IsOtherPowerUpActivated(PowerUpType::kConfuse)) {
                         _PostEffect->SetEffectState(Effects::kConfuse, GL_FALSE);
+                        _PosPowerUpChance = 50;
+                        _NegPowerUpChance = 25;
                     }
                 } else if (PowerUp->GetPowerUpType() == PowerUpType::kPadSizeIncrease) {
                     if (!IsOtherPowerUpActivated(PowerUpType::kPadSizeIncrease)) {
-                        _Paddle->SetSizeX(_Paddle->GetSize().x / 1.5f);
+                        _Paddle->SetSize(kPaddleSize);
                     }
                 } else if (PowerUp->GetPowerUpType() == PowerUpType::kPassThrough) {
                     if (!IsOtherPowerUpActivated(PowerUpType::kPassThrough)) {
@@ -457,7 +463,7 @@ GLvoid Game::UpdatePowerUps(GLfloat DeltaTime) {
                     }
                 } else if (PowerUp->GetPowerUpType() == PowerUpType::kSpeed) {
                     if (!IsOtherPowerUpActivated(PowerUpType::kSpeed)) {
-                        _Paddle->SetVelocity(_Paddle->GetVelocity() / 2.0f);
+                        _Paddle->SetVelocity(kPaddleVelocity);
                     }
                 }
             }
