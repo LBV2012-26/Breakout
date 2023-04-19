@@ -66,7 +66,7 @@ GLvoid TextRenderer::Draw(const std::string& Text, GLfloat x, GLfloat y, GLfloat
             PositionX + Width, PositionY,          1.0f, 0.0f
         };
 
-        Char.TexData->BindTextureUnit(_TextShader, "TexTexture", kSpriteTexUnit);
+        Char.TexData->BindTextureUnit(_TextShader, "TextTexture", kSpriteTexUnit);
 
         glNamedBufferSubData(_VertexBuffer, 0, Vertices.size() * sizeof(GLfloat), Vertices.data());
         glDrawArrays(GL_TRIANGLES, 0, 6);
